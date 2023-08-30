@@ -1,5 +1,17 @@
 #include "get_next_line.h"
 
+size_t	ft_strlen(char *str)
+{
+	size_t i;
+
+	i = 0;
+	if (!str)
+		return (0);
+	while (str[i])
+		i++;
+	return (i);
+}
+
 char	*new_line(char *str)
 {
 	int i;
@@ -55,7 +67,7 @@ char	*clean_stock(char *str, int i, int j)
 
 char    test(char *str)
 {
-    
+    str = new_line(str);
 }
 
 int	main(void)
@@ -71,15 +83,15 @@ int	main(void)
 	str[7] = '\0';
 	char *result;
 
-	result = test(str);
+	result[0] = test(str);
 	printf("Résultat -1: %s\n strlen : %ld\n", result, ft_strlen(result));
-	result = test(result);
+	result[1] = test(result);
 	printf("Résultat-2 : %s\n strlen : %ld\n", result, ft_strlen(result));
-	result = test(result);
+	result[2] = test(result);
 	printf("Résultat-3 : %s\n strlen : %ld\n", result, ft_strlen(result));
-	result = test(result);
+	result[3] = test(result);
 	printf("Résultat-4 : %s\n strlen : %ld\n", result, ft_strlen(result));
-	result = test(result);
+	result[4] = test(result);
 	return (0);
 }
 

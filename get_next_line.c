@@ -146,12 +146,11 @@ char	*get_next_line(int fd)
     {
         char_read = read(fd, buffer, BUFFER_SIZE);
 	    if (char_read == -1)
-	       return (free(buffer), NULL);
+	       return (free(buffer), NULL); 
         stock = ft_strjoin(stock, buffer);
         if (!stock)
             return (free(buffer), NULL);
     }
-
     line = new_line(stock);
     stock = clean_stock(stock, 0, 0);
     return (free(buffer), line);
