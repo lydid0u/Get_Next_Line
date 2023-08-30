@@ -21,11 +21,10 @@ size_t	ft_strlen(char *str)
 	size_t i;
 
 	i = 0;
+	if (!str)
+		return (0);
 	while (str[i])
-	{
 		i++;
-	}
-
 	return (i);
 }
 
@@ -56,6 +55,24 @@ char	*ft_strjoin(char *s1, char *s2)
     }
 	str[i] = '\0';
 	return (free(s1), str);
+}
+
+char	*ft_strchr(const char *s, int c)
+{
+	unsigned int	i;
+
+	i = 0;
+	while (s[i])
+	{
+		if ((unsigned char)s[i] == (unsigned char)c)
+		{
+			return ((char *)&s[i]);
+		}
+		i++;
+	}
+	if (c == '\0')
+		return ((char *)&s[i]);
+	return (0);
 }
 
 char	*new_line(char *str)
@@ -116,35 +133,30 @@ char	*get_next_line(int fd)
 	static char	*stock;
     char		*buffer;
 	char		*line;
-	int			char_lu;
+	int			char_read;
 
-	char_lu = 0;
+	char_read = 0;
 	if (BUFFER_SIZE <= 0)
 		return (NULL);
 	buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
     
-    while (char_lu > 0)
+    while (char_read > 0 && !ft_strchr(stock, '\n'))
     {
-        char_lu = read(fd, buffer, BUFFER_SIZE);
-	    if (char_lu == -1)
+        char_read = read(fd, buffer, BUFFER_SIZE);
+	    if (char_read == -1)
 	       return (free(buffer), NULL);
-      
-
-	  
         stock = ft_strjoin(stock, buffer);
-
-
-		
-        if (!stash)
-            return (free(buffer))
+        if (!stock)
+            return (free(buffer), NULL);
     }
 
     line = new_line(stock);
     stock = clean_stock(stock, 0, 0);
     return (free(buffer), line);
 }
+
 
 /*int	main(void)
 {
