@@ -1,17 +1,5 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: lboudjel <lboudjel@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/08/30 17:12:14 by lboudjel          #+#    #+#             */
-/*   Updated: 2023/08/30 17:12:14 by lboudjel         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-
-
+#include <stdio.h>
+#include <stdlib.h>
 #include "get_next_line.h"
 # include <sys/uio.h>
 # include <unistd.h>
@@ -19,25 +7,27 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 
+#ifndef BUFFER_SIZE
+# define BUFFER_SIZE 42
+#endif
+
 
 size_t	ft_strlen(const char *str)
 {
 	size_t i;
 
 	i = 0;
-	if (str)
-	{
-		while (str[i])
+	if (!str)
+		return (0);
+	while (str[i])
 		i++;
-		return (i);
-	}
-	return (0);
+	return (i);
 }
 
 char	*ft_strjoin(char *s1, char *s2)
 {	
-	size_t     i;
-    size_t     j;
+	int     i;
+    int     j;
     char	*str;
 	int		len;
 
@@ -45,19 +35,19 @@ char	*ft_strjoin(char *s1, char *s2)
     j = 0;
 	len = ft_strlen(s1) + ft_strlen(s2) + 1;
 	str = malloc(sizeof(char) * len);
-	if (!str)
+	if (s1 == NULL || s2 == NULL || str == NULL)
 		return (NULL);
         
-    while (i < ft_strlen(s1)) 
+    while (s1[i] != '\0') 
     {
         str[i] = s1[i];
         i++;
     }
-    while (j < ft_strlen(s2))  
+    while (s2[j] != '\0') 
     {
         str[i] = s2[j];
+        i++;
         j++;
-		i++;
     }
 	str[i] = '\0';
 	return (free(s1), str);
@@ -82,45 +72,44 @@ int	ft_strchr(const char *str, int c)
 
 char	*new_line(char *str)
 {
-	size_t i;
-	size_t j;
+	int i;
 	char *line;
 
 	i = 0;
-	j = 0;
-	if (!str || !str[0])
-		return (NULL);
-	while (str[i] != '\0' && str[i] != '\n')
-		i++;
-	line = malloc(sizeof(char) * (i + 2));
+	line = malloc(sizeof(char) * (ft_strlen(str) + 1));
+
 	if (line == NULL)
 		return (NULL);
-	while (j <= i)
+	while (str[i] != '\0' && str[i] != '\n')
 	{
-		line[j] = str[j];
-		j++;
+		line[i] = str[i];
+		i++;
 	}
 	if (str[i] != '\0')
 	{
-		line[j] = '\n';
+		line[i] = '\n';
 		i++;
 	}
 
-	line[j] = '\0';
+	line[i] = '\0';
+
 	return (line);
 }
 
-char	*clean_stock(char *str, size_t i, size_t j) 
+char	*clean_stock(char *str, int i, int j) 
 {
 	char *clean;
 
-	while (str[i] != '\0' && str[i] != '\n')
+	if (!str || !ft_strchr(str, '\n')) //cest pas parce que ca rentre la que il ny a plus rien a lire dans le fichier, ta condition de sorti de gnl, cest read renvoie 0, et dans mon stock il est vide
+	{
+		free(str);
+		return (NULL); //ca va te free ton stock et le remplacer par NULL mais cest pas force que ya plus rien a dire
+	}
+	clean = malloc(sizeof(char) * (ft_strlen(str) + 1));
+	if (clean == NULL)
+		return (NULL);
+	while (str[i] && str[i] != '\n')
 		i++;
-	if (!str[i])
-		return (free(str), NULL); 
-	clean = malloc(sizeof(char) * (ft_strlen(str)));
-	if (!clean)
-		return (free(str), NULL); 
 	if (str[i] == '\n')
 		i++;
 	while (str[i])
@@ -130,7 +119,8 @@ char	*clean_stock(char *str, size_t i, size_t j)
 		j++;
 	}
 	clean[j] = '\0';
-	return(free(str), clean);
+	free(str);
+	return(clean);
 }
 
 char	*get_next_line(int fd)
@@ -162,7 +152,8 @@ char	*get_next_line(int fd)
     return (free(buffer), line);
 }
 
-  int	main(int argc, char **argv)
+
+int	main(int argc, char **argv)
    {
    char	*str;
    int		fd;
@@ -173,18 +164,10 @@ char	*get_next_line(int fd)
    str = get_next_line(fd);
    while (str)
    {
-  	 printf("%s", str);
-  	 free(str);
-  	 str = get_next_line(fd);
+   printf("%s", str);
+   free(str);
+   str = get_next_line(fd);
    }
    free(str);
    return (0);
    }
-
-//int main ()
-//{
-//    char    str[] = "test\nla\n";
-//    char *result = test(str);
-//
-//    printf("Résultat : %s\n", result);
-//}
